@@ -1,3 +1,3 @@
-# ASCIIfy #
+# Tabata #
 
 Configurable interval timer.
