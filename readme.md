@@ -1,0 +1,3 @@
+# ASCIIfy #
+
+Configurable interval timer.
