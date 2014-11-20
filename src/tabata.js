@@ -2,14 +2,17 @@
  * Configurable interval timer.
  *
  */
-function Tabata(timer){
+function Tabata(timer, delay){
     var events = {};
     var second = 0;
     var lastUpdate = 0;
     var timeoutId;
+    var delay = typeof delay === 'undefined' ? 200 : delay;
     var self = this;
     self.time = 0;
-    // Run updates every second-ish while running.
+    // Update total elapsed time.
+    // Fire 'second' events every second-ish while running.
+    // Also check for and fire other events.
     var update = function(){
         var now = Date.now();
         var elapsed = now - lastUpdate;
@@ -20,7 +23,7 @@ function Tabata(timer){
             self.fire('second');
         }
         lastUpdate = now;
-        timeoutId = window.setTimeout(update);
+        timeoutId = window.setTimeout(update, delay);
     };
     self.second = function(){
         return Math.floor(self.time / 1000);

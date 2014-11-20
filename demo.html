@@ -17,10 +17,11 @@
     (function(){
         var time = document.getElementById('time');
         var timer = new Tabata();
+        document.getElementById('start').addEventListener('click', timer.start);
+        document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
             time.textContent = timer.second();
         });
-        timer.start();
     })();
     </script>
 </body>
