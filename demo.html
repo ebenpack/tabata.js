@@ -29,7 +29,7 @@
             'on': '2m',
             'off': '30s',
             'rounds': 2
-        }], 100);
+        }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
