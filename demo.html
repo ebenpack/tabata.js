@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <style>
+        .time {
+            font-size: 80px;
+        }
+    </style>
 </head>
 <body>
 
     <div id="tabata">
-        <div id="time"></div>
+        <div id="time" class="time">00:00</div>
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
@@ -16,7 +21,15 @@
     <script>
     (function(){
         var time = document.getElementById('time');
-        var timer = new Tabata();
+        var timer = new Tabata([{
+            'on': '3m',
+            'off':'1m',
+            'rounds': 5
+        }, {
+            'on': '2m',
+            'off': '30s',
+            'rounds': 2
+        }], 100);
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
