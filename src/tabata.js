@@ -3,6 +3,7 @@
  *
  */
 function Tabata(timer, delay, options){
+    var timeRe = /(\d*\.?\d*)([hms])/g;
     var events = {};
     var second = 0;
     var lastUpdate = 0;
@@ -26,8 +27,6 @@ function Tabata(timer, delay, options){
         }
     }
 
-    // TODO: parse timer object to create event queue.
-    //
     // Update total elapsed time.
     // Fire 'second' events every second-ish while running.
     // Also check for and fire other events.
@@ -43,40 +42,45 @@ function Tabata(timer, delay, options){
         if (timeSeconds - second >= 1){
             second = timeSeconds;
             self.fire('second');
-            // TODO: Check next item in event queue and fire events
+            if (second >= eventQueue[eventCursor].time){
+                self.fire(eventQueue[eventCursor].event);
+                eventCursor += 1;
+            }
         }
         lastUpdate = now;
         timeoutId = window.setTimeout(update, delay);
     }
     function parseTimer(){
-        // TODO: Keep running total in order to record events relative to start
+        var offset = 0;
         for (var i = 0, len = timer.length; i < len; i++){
             var current = timer[i];
             var on = typeof current.on === 'number' ? current.on : parseTime(current.on);
             var off = typeof current.off === 'number' ? current.off : parseTime(current.off);
             var rounds = typeof current.rounds === 'number' ? current.rounds : 1;
             for (var j = 0; j < rounds; j++){
-                eventQueue.push(on);
+                eventQueue.push({time: offset, event: 'on'});
+                offset += on;
                 // Do not add a final 'off' round.
                 if (options.finalRound ||  j < (rounds - 1) && i < (len - 1)){
-                    eventQueue.push(off);
+                    eventQueue.push({time: offset, event: 'off'});
+                    offset += off;
                 }
             }
         }
     }
     function parseTime(time){
-        var re = /(\d*\.?\d*)([hms])/g;
-        var match = re.exec(time);
+        timeRe.lastIndex = 0;
+        var match = timeRe.exec(time);
         var miliseconds = 0;
         while (match){
             if (match[2] === 's'){
-                miliseconds += parseFloat(match[1]) * 1000;
+                miliseconds += parseFloat(match[1]);
             } else if (match[2] === 'm'){
-                miliseconds += parseFloat(match[1]) * 60000;
+                miliseconds += parseFloat(match[1]) * 60;
             } else if (match[2] === 'h'){
-                miliseconds += parseFloat(match[1]) * 3600000;
+                miliseconds += parseFloat(match[1]) * 3600;
             }
-            match = re.exec(time);
+            match = timeRe.exec(time);
         }
         return miliseconds;
     }
@@ -98,6 +102,10 @@ function Tabata(timer, delay, options){
     };
     self.start = function(){
         lastUpdate = Date.now();
+        if (second >= eventQueue[eventCursor].time){
+            self.fire(eventQueue[eventCursor].event);
+            eventCursor += 1;
+        }
         timeoutId = update();
     };
     self.stop = function(){

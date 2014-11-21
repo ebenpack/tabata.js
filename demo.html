@@ -20,10 +20,11 @@
     <script src="src/tabata.js"></script>
     <script>
     (function(){
+        var body = document.getElementsByTagName('body')[0];
         var time = document.getElementById('time');
         var timer = new Tabata([{
-            'on': '3m',
-            'off':'1m',
+            'on': '3s',
+            'off':'5s',
             'rounds': 5
         }, {
             'on': '2m',
@@ -34,6 +35,12 @@
         document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
             time.textContent = timer.second();
+        });
+        timer.on('on', function(){
+            body.style.background = 'green';
+        });
+        timer.on('off', function(){
+            body.style.background = 'red';
         });
     })();
     </script>
