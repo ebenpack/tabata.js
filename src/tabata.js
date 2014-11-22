@@ -5,7 +5,7 @@
 function Tabata(timer, delay, options){
     var timeRe = /(\d*\.?\d*)([hms])/g;
     var events = {};
-    var second = 0;
+    var second = -1;
     var lastUpdate = 0;
     var timeoutId;
     var delay = typeof delay === 'undefined' ? 200 : delay;
@@ -13,10 +13,13 @@ function Tabata(timer, delay, options){
         finalRound: false
     };
     var eventQueue = [];
-    var eventCursor = 0;
+    // Use eventIndex to avoid popping from the queue,
+    // so it doesn't need to be rebuilt on reset.
+    var eventIndex = 0;
     var self = this;
     self.time = 0;
 
+    // Extend defaults with options.
     if (typeof options === 'undefined'){
         options = defaults;
     } else {
@@ -30,10 +33,6 @@ function Tabata(timer, delay, options){
     // Update total elapsed time.
     // Fire 'second' events every second-ish while running.
     // Also check for and fire other events.
-    function init(){
-        parseTimer();
-        // Other stuff
-    }
     function update(){
         var now = Date.now();
         var elapsed = now - lastUpdate;
@@ -42,9 +41,16 @@ function Tabata(timer, delay, options){
         if (timeSeconds - second >= 1){
             second = timeSeconds;
             self.fire('second');
-            if (second >= eventQueue[eventCursor].time){
-                self.fire(eventQueue[eventCursor].event);
-                eventCursor += 1;
+            var nextEvent = eventQueue[eventIndex];
+            if (second === nextEvent.time - 3){
+                self.fire('three');
+            } else if (second === nextEvent.time - 2){
+                self.fire('two');
+            } else if (second === nextEvent.time - 1){
+                self.fire('one');
+            } else if (second >= nextEvent.time){
+                self.fire(nextEvent.event);
+                eventIndex += 1;
             }
         }
         lastUpdate = now;
@@ -54,18 +60,25 @@ function Tabata(timer, delay, options){
         var offset = 0;
         for (var i = 0, len = timer.length; i < len; i++){
             var current = timer[i];
-            var on = typeof current.on === 'number' ? current.on : parseTime(current.on);
-            var off = typeof current.off === 'number' ? current.off : parseTime(current.off);
+            var on = typeof current.on === 'number' ? current.on / 1000 : parseTime(current.on);
+            var off = typeof current.off === 'number' ? current.off / 1000 : parseTime(current.off);
             var rounds = typeof current.rounds === 'number' ? current.rounds : 1;
             for (var j = 0; j < rounds; j++){
                 eventQueue.push({time: offset, event: 'on'});
                 offset += on;
                 // Do not add a final 'off' round.
-                if (options.finalRound ||  j < (rounds - 1) && i < (len - 1)){
+                if (j < (rounds - 1) && i < (len - 1)){
+                    if (options.finalRound){
+                        eventQueue.push({time: offset, event: 'off'});
+                        offset += off;
+                    }
+                    eventQueue.push({time: offset, event: 'finish'});
+                } else {
                     eventQueue.push({time: offset, event: 'off'});
                     offset += off;
                 }
             }
+            eventQueue.push({time: offset, event: 'roundover'});
         }
     }
     function parseTime(time){
@@ -102,11 +115,7 @@ function Tabata(timer, delay, options){
     };
     self.start = function(){
         lastUpdate = Date.now();
-        if (second >= eventQueue[eventCursor].time){
-            self.fire(eventQueue[eventCursor].event);
-            eventCursor += 1;
-        }
-        timeoutId = update();
+        update();
     };
     self.stop = function(){
         window.clearTimeout(timeoutId);
@@ -124,5 +133,9 @@ function Tabata(timer, delay, options){
             }
         }
     };
+    function init(){
+        parseTimer();
+        // Other stuff?
+    }
     init();
 }

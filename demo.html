@@ -24,12 +24,12 @@
         var time = document.getElementById('time');
         var timer = new Tabata([{
             'on': '3s',
-            'off':'5s',
-            'rounds': 5
+            'off':'2s',
+            'rounds': 1
         }, {
-            'on': '2m',
-            'off': '30s',
-            'rounds': 2
+            'on': '3s',
+            'off': '2s',
+            'rounds': 1
         }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
@@ -41,6 +41,9 @@
         });
         timer.on('off', function(){
             body.style.background = 'red';
+        });
+        timer.on('finish', function(){
+            body.style.background = 'yellow';
         });
     })();
     </script>
