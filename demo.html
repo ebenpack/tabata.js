@@ -12,7 +12,22 @@
 <body>
 
     <div id="tabata">
-        <div id="time" class="time">00:00</div>
+        <div>
+            Time Elapsed:
+            <div id="time" class="time">00:00</div>
+        </div>
+        <div>
+            Time Remaining
+            <div id="timeRemaining" class="time">00:00</div>
+        </div>
+        <div>
+            Round Elapsed:
+            <div id="roundTime" class="time">00:00</div>
+        </div>
+        <div>
+            Round Time Remaining
+            <div id="roundTimeRemaining" class="time">00:00</div>
+        </div>
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
@@ -22,7 +37,13 @@
     (function(){
         var body = document.getElementsByTagName('body')[0];
         var time = document.getElementById('time');
+        var timeRemainging = document.getElementById('timeRemaining');
+        var roundTime = document.getElementById('roundTime');
+        var roundtimeRemainging = document.getElementById('roundTimeRemaining');
         var timer = new Tabata([{
+            'warmup': '10s'
+        }
+        ,{
             'on': '3s',
             'off':'2s',
             'rounds': 1
@@ -30,11 +51,16 @@
             'on': '3s',
             'off': '2s',
             'rounds': 1
+        }, {
+            'cooldown': '10s'
         }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
-            time.textContent = timer.second();
+            time.textContent = timer.timeElapsed();
+            timeRemaining.textContent = timer.timeRemaining();
+            roundTime.textContent = timer.roundTimeElapsed();
+            roundTimeRemaining.textContent = timer.roundTimeRemaining();
         });
         timer.on('on', function(){
             body.style.background = 'green';

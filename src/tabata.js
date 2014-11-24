@@ -5,9 +5,10 @@
 function Tabata(timer, delay, options){
     var timeRe = /(\d*\.?\d*)([hms])/g;
     var events = {};
-    var second = -1;
+    var second = -1; // Total seconds elapsed
     var lastUpdate = 0;
     var timeoutId;
+    var totalTime = 0;
     var delay = typeof delay === 'undefined' ? 200 : delay;
     var defaults = {
         finalRound: false
@@ -16,8 +17,11 @@ function Tabata(timer, delay, options){
     // Use eventIndex to avoid popping from the queue,
     // so it doesn't need to be rebuilt on reset.
     var eventIndex = 0;
+    var roundTimeElapsed = 0;
     var self = this;
     self.time = 0;
+    self.currentSeconds = 0; // Seconds elapsed in current event
+    self.currentSecondsRemaining = 0;
 
     // Extend defaults with options.
     if (typeof options === 'undefined'){
@@ -40,6 +44,7 @@ function Tabata(timer, delay, options){
         var timeSeconds = Math.floor(self.time / 1000);
         if (timeSeconds - second >= 1){
             second = timeSeconds;
+            roundTimeElapsed += Math.floor(elapsed / 1000);
             self.fire('second');
             var nextEvent = eventQueue[eventIndex];
             if (second === nextEvent.time - 3){
@@ -48,37 +53,53 @@ function Tabata(timer, delay, options){
                 self.fire('two');
             } else if (second === nextEvent.time - 1){
                 self.fire('one');
-            } else if (second >= nextEvent.time){
+            }
+            while (nextEvent.time <= second || nextEvent.time + nextEvent.duration === second){
                 self.fire(nextEvent.event);
                 eventIndex += 1;
+                nextEvent = eventQueue[eventIndex];
+                roundTimeElapsed = 0;
             }
         }
         lastUpdate = now;
-        timeoutId = window.setTimeout(update, delay);
+        if (eventIndex < eventQueue.length){
+            timeoutId = window.setTimeout(update, delay);
+        }
     }
     function parseTimer(){
         var offset = 0;
         for (var i = 0, len = timer.length; i < len; i++){
             var current = timer[i];
-            var on = typeof current.on === 'number' ? current.on / 1000 : parseTime(current.on);
-            var off = typeof current.off === 'number' ? current.off / 1000 : parseTime(current.off);
-            var rounds = typeof current.rounds === 'number' ? current.rounds : 1;
-            for (var j = 0; j < rounds; j++){
-                eventQueue.push({time: offset, event: 'on'});
-                offset += on;
-                // Do not add a final 'off' round.
-                if (j < (rounds - 1) && i < (len - 1)){
-                    if (options.finalRound){
-                        eventQueue.push({time: offset, event: 'off'});
+            if (typeof current.warmup !== 'undefined'){
+                var warmup = typeof current.warmup === 'number' ? current.warmup : parseTime(current.warmup);
+                eventQueue.push({time: offset, duration: warmup, event: 'warmup'});
+                offset += warmup;
+            }else if (typeof current.cooldown !== 'undefined'){
+                var cooldown = typeof current.cooldown === 'number' ? current.cooldown : parseTime(current.cooldown);
+                eventQueue.push({time: offset, duration: cooldown, event: 'cooldown'});
+                offset += cooldown;
+            } else {
+                var on = typeof current.on === 'number' ? current.on : parseTime(current.on);
+                var off = typeof current.off === 'number' ? current.off : parseTime(current.off);
+                var rounds = typeof current.rounds === 'number' ? current.rounds : 1;
+                for (var j = 0; j < rounds; j++){
+                    eventQueue.push({time: offset, duration: on, event: 'on'});
+                    offset += on;
+                    // Do not add a final 'off' round, unless specified in the options.
+                    if (j < (rounds - 1) && i < (len - 1)){
+                        if (options.finalRound){
+                            eventQueue.push({time: offset, duration: off, event: 'off'});
+                            offset += off;
+                        }
+                        eventQueue.push({time: offset, duration: 0, event: 'finish'});
+                    } else {
+                        eventQueue.push({time: offset, duration: off, event: 'off'});
                         offset += off;
                     }
-                    eventQueue.push({time: offset, event: 'finish'});
-                } else {
-                    eventQueue.push({time: offset, event: 'off'});
-                    offset += off;
                 }
             }
-            eventQueue.push({time: offset, event: 'roundover'});
+            eventQueue.push({time: offset, duration: 0, event: 'roundover'});
+            totalTime = offset;
         }
     }
     function parseTime(time){
@@ -107,8 +128,17 @@ function Tabata(timer, delay, options){
         }
         return numStr;
     }
-    self.second = function(){
+    self.timeElapsed = function(){
         return formatTime(second);
+    };
+    self.timeRemaining = function(){
+        return formatTime(totalTime - second);
+    };
+    self.roundTimeElapsed = function(){
+        return roundTimeElapsed;
+    };
+    self.roundTimeRemaining = function(){
+        return formatTime(eventQueue[eventIndex].time - second);
     };
     self.centisecond = function(){
         return formatTime(parseFloat((self.time / 1000).toFixed(2)));
