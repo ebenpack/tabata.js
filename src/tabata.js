@@ -86,19 +86,15 @@ function Tabata(timer, delay, options){
                     eventQueue.push({time: offset, duration: on, event: 'on'});
                     offset += on;
                     // Do not add a final 'off' round, unless specified in the options.
-                    if (j < (rounds - 1) && i < (len - 1)){
-                        if (options.finalRound){
-                            eventQueue.push({time: offset, duration: off, event: 'off'});
-                            offset += off;
-                        }
-                        eventQueue.push({time: offset, duration: 0, event: 'finish'});
+                    if (j < (rounds - 1) && i < (len - 1) && options.finalRound){
+                        eventQueue.push({time: offset, duration: off, event: 'off'});
+                        offset += off;
                     } else {
                         eventQueue.push({time: offset, duration: off, event: 'off'});
                         offset += off;
                     }
                 }
             }
-            eventQueue.push({time: offset, duration: 0, event: 'roundover'});
             totalTime = offset;
         }
     }
