@@ -2,14 +2,14 @@
  * Configurable interval timer.
  *
  */
-function Tabata(timer, delay, options){
+function Tabata(timer, optionalDelay, options){
     var timeRe = /(\d*\.?\d*)([hms])/g;
     var events = {};
     var second = -1; // Total seconds elapsed
     var lastUpdate = 0;
     var timeoutId;
     var totalTime = 0;
-    var delay = typeof delay === 'undefined' ? 200 : delay;
+    var delay = typeof optionalDelay === 'undefined' ? 200 : optionalDelay;
     var defaults = {
         finalRound: false
     };
@@ -63,7 +63,7 @@ function Tabata(timer, delay, options){
         }
         lastUpdate = now;
         if (eventIndex < eventQueue.length){
-            timeoutId = window.setTimeout(update, delay);
+            timeoutId = setTimeout(update, delay);
         }
     }
     function parseTimer(){
@@ -144,7 +144,7 @@ function Tabata(timer, delay, options){
         update();
     };
     self.stop = function(){
-        window.clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
     };
     self.on = function(event, fn){
         if (typeof events[event] === 'undefined'){
