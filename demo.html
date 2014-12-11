@@ -7,18 +7,6 @@
         .time {
             font-size: 80px;
         }
-        #debug {
-            position:absolute;
-            right:0;
-            top:0;
-            height:100%;
-            width:20%;
-            background-color:rgba(0,0,0,0.75);
-            color:white;
-        }
-        #debug.hidden {
-            right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -43,10 +31,6 @@
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
-    <div id="debug">
-        
-    </div>
-
     <script src="src/tabata.js"></script>
     <script>
     (function(){
@@ -84,7 +68,6 @@
             timeRemaining.textContent = timer.timeRemaining();
             roundTime.textContent = timer.roundTimeElapsed();
             roundTimeRemaining.textContent = timer.roundTimeRemaining();
-            document.getElementById('debug').textContent = JSON.stringify(timer);
         });
         timer.on('on', function(){
             body.style.background = 'green';
