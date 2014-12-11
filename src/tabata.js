@@ -19,9 +19,8 @@ function Tabata(timer, optionalDelay, options){
     var roundTimeElapsed = 0;
     var miliseconds = 0;
     var self = this;
-    self.currentSeconds = 0; // Seconds elapsed in current event
     self.eventQueue = [];
-    self.currentSecondsRemaining = 0;
+    var currentEvent;
 
     // Extend defaults with options.
     if (typeof options === 'undefined'){
@@ -68,34 +67,23 @@ function Tabata(timer, optionalDelay, options){
     }
     function parseTimer(timer){
         var offset = 0;
-        // Add prestart event
+        self.eventQueue.push({time: 0, duration: 0, event: 'start'});
         for (var i = 0, len = timer.length; i < len; i++){
             var current = timer[i];
-            if (typeof current.warmup !== 'undefined'){
-                var warmup = typeof current.warmup === 'number' ? current.warmup : parseTime(current.warmup);
-                self.eventQueue.push({time: offset, duration: warmup, event: 'warmup'});
-                offset += warmup;
-            }else if (typeof current.cooldown !== 'undefined'){
-                var cooldown = typeof current.cooldown === 'number' ? current.cooldown : parseTime(current.cooldown);
-                self.eventQueue.push({time: offset, duration: cooldown, event: 'cooldown'});
-                offset += cooldown;
-                self.eventQueue.push({time: offset, duration: 0, event: 'end'});
-            } else {
-                var on = typeof current.on === 'number' ? current.on : parseTime(current.on);
-                var off = typeof current.off === 'number' ? current.off : parseTime(current.off);
-                var rounds = typeof current.rounds === 'number' ? current.rounds : 1;
-                for (var j = 0; j < rounds; j++){
-                    self.eventQueue.push({time: offset, duration: on, event: 'on'});
-                    offset += on;
-                    // Do not add a final 'off' round, unless specified in the options.
-                    if ((j < (rounds - 1) && i < (len - 1)) || options.finalRound){
-                        self.eventQueue.push({time: offset, duration: off, event: 'off'});
-                        offset += off;
+            var rounds = current.hasOwnProperty('rounds') ? current.rounds : 1;
+            for (var j = 0; j < rounds; j++){
+                for (var k = 0; k < current.events.length; k++){
+                    for (var evt in current.events[k]){
+                        var currentEvent = current.events[k];
+                        var duration = typeof currentEvent[evt] === 'number' ? currentEvent[evt] : parseTime(currentEvent[evt]);
+                        self.eventQueue.push({time: offset, duration: duration, event: evt});
+                        offset += duration;
                     }
                 }
             }
-            totalTime = offset;
         }
+        self.eventQueue.push({time: offset, duration: 0, event: 'end'});
+        totalTime = offset;
     }
     function parseTime(time){
         timeRe.lastIndex = 0;

@@ -7,6 +7,18 @@
         .time {
             font-size: 80px;
         }
+        #debug {
+            position:absolute;
+            right:0;
+            top:0;
+            height:100%;
+            width:20%;
+            background-color:rgba(0,0,0,0.75);
+            color:white;
+        }
+        #debug.hidden {
+            right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +43,9 @@
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
+    <div id="debug">
+        
+    </div>
 
     <script src="src/tabata.js"></script>
     <script>
@@ -40,19 +55,28 @@
         var timeRemainging = document.getElementById('timeRemaining');
         var roundTime = document.getElementById('roundTime');
         var roundtimeRemainging = document.getElementById('roundTimeRemaining');
-        var timer = new Tabata([{
-            'warmup': '10s'
-        }, {
-            'on': '10s',
-            'off':'5s',
-            'rounds': 1
-        }, {
-            'on': '3s',
-            'off': '2s',
-            'rounds': 1
-        }, {
-            'cooldown': '10s'
-        }], 100, {});
+        var timer = new Tabata(
+            [{
+                'events': [{
+                    'warmup': '10s'
+                }]
+            }, {
+                'events': [{
+                    'on': '10s'
+                }, {
+                    'off': '5s'
+                }],
+                'rounds': 1
+            }, {
+                'events': [{
+                    'on': '3s'
+                }, {
+                    'off': '2s'
+                }],
+                'rounds': 5
+            }, {
+                'events': [{'cooldown': '10s'}]
+            }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
         timer.on('second', function(){
@@ -60,6 +84,7 @@
             timeRemaining.textContent = timer.timeRemaining();
             roundTime.textContent = timer.roundTimeElapsed();
             roundTimeRemaining.textContent = timer.roundTimeRemaining();
+            document.getElementById('debug').textContent = JSON.stringify(timer);
         });
         timer.on('on', function(){
             body.style.background = 'green';
