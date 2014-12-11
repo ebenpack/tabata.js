@@ -10,14 +10,12 @@ function Tabata(timer, optionalDelay, options){
     var timeoutId;
     var totalTime = 0;
     var delay = typeof optionalDelay === 'undefined' ? 200 : optionalDelay;
-    var defaults = {
-        finalRound: false
-    };
+    var defaults = {};
     // Use eventIndex to avoid popping from the queue,
     // so it doesn't need to be rebuilt on reset.
     var eventIndex = 0;
     var roundTimeElapsed = 0;
-    var miliseconds = 0;
+    var milliseconds = 0;
     var self = this;
     self.eventQueue = [];
     var currentEvent;
@@ -39,8 +37,8 @@ function Tabata(timer, optionalDelay, options){
     function update(){
         var now = Date.now();
         var elapsed = now - lastUpdate;
-        miliseconds += elapsed;
-        var timeSeconds = Math.floor(miliseconds / 1000);
+        milliseconds += elapsed;
+        var timeSeconds = Math.floor(milliseconds / 1000);
         currentEvent = self.eventQueue[eventIndex];
         if (currentEvent && timeSeconds - second >= 1){
             second = timeSeconds;
@@ -88,18 +86,18 @@ function Tabata(timer, optionalDelay, options){
     function parseTime(time){
         timeRe.lastIndex = 0;
         var match = timeRe.exec(time);
-        var miliseconds = 0;
+        var milliseconds = 0;
         while (match){
             if (match[2] === 's'){
-                miliseconds += parseFloat(match[1]);
+                milliseconds += parseFloat(match[1]);
             } else if (match[2] === 'm'){
-                miliseconds += parseFloat(match[1]) * 60;
+                milliseconds += parseFloat(match[1]) * 60;
             } else if (match[2] === 'h'){
-                miliseconds += parseFloat(match[1]) * 3600;
+                milliseconds += parseFloat(match[1]) * 3600;
             }
             match = timeRe.exec(time);
         }
-        return miliseconds;
+        return milliseconds;
     }
     function formatTime(time) {
         return pad(Math.floor(time / 60), 2) + ":" + pad(time % 60, 2);
@@ -124,7 +122,7 @@ function Tabata(timer, optionalDelay, options){
         return formatTime(self.eventQueue[eventIndex].time - second);
     };
     self.centisecond = function(){
-        return formatTime(parseFloat((miliseconds / 1000).toFixed(2)));
+        return formatTime(parseFloat((milliseconds / 1000).toFixed(2)));
     };
     self.start = function(){
         lastUpdate = Date.now();
