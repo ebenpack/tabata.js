@@ -41,16 +41,16 @@ function Tabata(timer, optionalDelay, options){
         var timeSeconds = Math.floor(milliseconds / 1000);
         self.currentEvent = self.eventQueue[eventIndex];
         var currentEvent = self.currentEvent;
-        while (currentEvent && currentEvent.time <= second){
-            self.fire(currentEvent.event);
-            eventIndex += 1;
-            self.currentEvent = self.eventQueue[eventIndex];
-            currentEvent = self.currentEvent;
-            roundTimeElapsed = 0;
-        }
         if (currentEvent && timeSeconds - second >= 1){
             second = timeSeconds;
             roundTimeElapsed += elapsed;
+            while (currentEvent && currentEvent.time <= second){
+                self.fire(currentEvent.event);
+                eventIndex += 1;
+                self.currentEvent = self.eventQueue[eventIndex];
+                currentEvent = self.currentEvent;
+                roundTimeElapsed = 0;
+            }
             self.fire('second');
             if (second === currentEvent.time - 3){
                 self.fire('three');
@@ -65,6 +65,8 @@ function Tabata(timer, optionalDelay, options){
             timeoutId = setTimeout(update, delay);
         }
     }
+    // Parse event timer object and
+    // build event queue
     function parseTimer(timer){
         var offset = 0;
         self.eventQueue.push({time: 0, duration: 0, event: 'start'});
@@ -85,6 +87,8 @@ function Tabata(timer, optionalDelay, options){
         self.eventQueue.push({time: offset, duration: 0, event: 'end'});
         totalTime = offset;
     }
+    // Parse a time string consisting of hours, minutes, seconds, and return the
+    // total number of seconds.
     function parseTime(time){
         var timeRe = /(\d*\.?\d*)([hms])/g;
         var match = timeRe.exec(time);
@@ -101,9 +105,12 @@ function Tabata(timer, optionalDelay, options){
         }
         return seconds;
     }
+    // Return a formatted time (in the
+    // format 01:23) from the given number of seconds
     function formatTime(time) {
         return pad(Math.floor(time / 60), 2) + ":" + pad(time % 60, 2);
     }
+    // Pad a number with leading zeroes.
     function pad(num, size){
         var numStr = num.toString();
         while (numStr.length < size) {
