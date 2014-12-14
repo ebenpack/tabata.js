@@ -70,7 +70,7 @@ function Tabata(timer, optionalDelay, options){
     // build event queue
     function parseTimer(timer){
         var offset = 0;
-        self.eventQueue.push({time: 0, duration: 0, event: 'start'});
+        //self.eventQueue.push({time: 0, duration: 0, event: 'start'});
         for (var i = 0, len = timer.length; i < len; i++){
             var current = timer[i];
             var rounds = current.hasOwnProperty('rounds') ? current.rounds : 1;
@@ -143,14 +143,17 @@ function Tabata(timer, optionalDelay, options){
         playing = false;
         clearTimeout(timeoutId);
     };
-    self.on = function(evts, fn, args){
+    self.on = function(evts, fn, that, args){
         var eventArray = evts.split(' ');
+        if (typeof that === 'undefined'){
+            that = null;
+        }
         for (var i = 0, len = eventArray.length; i < len; i++){
             var event = eventArray[i];
             if (typeof events[event] === 'undefined'){
                 events[event] = [];
             }
-            events[event].push([fn, args]);
+            events[event].push([fn, that, args]);
         }
     };
     self.fire = function(event){
@@ -159,7 +162,7 @@ function Tabata(timer, optionalDelay, options){
         if (typeof events[event] !== 'undefined'){
             for (var i = 0, len = events[event].length; i < len; i++){
                 var evt = events[event][i];
-                evt[0].apply(evt[1]);
+                evt[0].apply(evt[1], evt[2]);
             }
         }
     };
