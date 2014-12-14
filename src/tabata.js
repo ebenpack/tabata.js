@@ -4,7 +4,7 @@
  */
 function Tabata(timer, optionalDelay, options){
     var events = {};
-    var second = -1; // Total seconds elapsed
+    var second = 0; // Total seconds elapsed
     var lastUpdate = 0;
     var timeoutId;
     var totalTime = 0;
@@ -18,7 +18,6 @@ function Tabata(timer, optionalDelay, options){
     var self = this;
     var playing = false;
     self.eventQueue = [];
-    self.currentEvent;
 
     // Extend defaults with options.
     if (typeof options === 'undefined'){
@@ -44,6 +43,7 @@ function Tabata(timer, optionalDelay, options){
         if (currentEvent && timeSeconds - second >= 1){
             second = timeSeconds;
             roundTimeElapsed += elapsed;
+            self.fire('second');
             while (currentEvent && currentEvent.time <= second){
                 self.fire(currentEvent.event);
                 eventIndex += 1;
@@ -51,13 +51,14 @@ function Tabata(timer, optionalDelay, options){
                 currentEvent = self.currentEvent;
                 roundTimeElapsed = 0;
             }
-            self.fire('second');
-            if (second === currentEvent.time - 3){
-                self.fire('three');
-            } else if (second === currentEvent.time - 2){
-                self.fire('two');
-            } else if (second === currentEvent.time - 1){
-                self.fire('one');
+            if (currentEvent){
+                if (second === currentEvent.time - 3){
+                    self.fire('three');
+                } else if (second === currentEvent.time - 2){
+                    self.fire('two');
+                } else if (second === currentEvent.time - 1){
+                    self.fire('one');
+                }
             }
         }
         lastUpdate = now;
@@ -142,24 +143,28 @@ function Tabata(timer, optionalDelay, options){
         playing = false;
         clearTimeout(timeoutId);
     };
-    self.on = function(event, fn){
-        if (typeof events[event] === 'undefined'){
-            events[event] = [];
+    self.on = function(evts, fn, args){
+        var eventArray = evts.split(' ');
+        for (var i = 0, len = eventArray.length; i < len; i++){
+            var event = eventArray[i];
+            if (typeof events[event] === 'undefined'){
+                events[event] = [];
+            }
+            events[event].push([fn, args]);
         }
-        events[event].push(fn);
     };
     self.fire = function(event){
         // TODO: Remove debug statement
         console.log(event);
         if (typeof events[event] !== 'undefined'){
             for (var i = 0, len = events[event].length; i < len; i++){
-                events[event][i]();
+                var evt = events[event][i];
+                evt[0].apply(evt[1]);
             }
         }
     };
     function init(){
         parseTimer(timer);
-        // Other stuff?
     }
     init();
 }

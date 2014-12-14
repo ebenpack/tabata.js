@@ -63,7 +63,7 @@
             }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
-        timer.on('second', function(){
+        timer.on('init second', function(){
             time.textContent = timer.timeElapsed();
             timeRemaining.textContent = timer.timeRemaining();
             roundTime.textContent = timer.roundTimeElapsed();
@@ -78,6 +78,7 @@
         timer.on('finish', function(){
             body.style.background = 'yellow';
         });
+        timer.fire('init');
     })();
     </script>
 </body>
