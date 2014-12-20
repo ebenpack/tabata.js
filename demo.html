@@ -63,20 +63,20 @@
             }], 100, {});
         document.getElementById('start').addEventListener('click', timer.start);
         document.getElementById('stop').addEventListener('click', timer.stop);
-        timer.on('init second', function(){
+        timer.on('init second end', function(evt){
+            if (evt.name === 'end'){
+                body.style.background = 'yellow';
+            }
             time.textContent = timer.timeElapsed();
             timeRemaining.textContent = timer.timeRemaining();
             roundTime.textContent = timer.roundTimeElapsed();
             roundTimeRemaining.textContent = timer.roundTimeRemaining();
         });
-        timer.on('on', function(){
+        timer.on('on', function(evt){
             body.style.background = 'green';
         });
-        timer.on('off', function(){
+        timer.on('off', function(evt){
             body.style.background = 'red';
-        });
-        timer.on('finish', function(){
-            body.style.background = 'yellow';
         });
         timer.fire('init');
     })();
