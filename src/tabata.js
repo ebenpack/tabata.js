@@ -169,12 +169,16 @@ function Tabata(timer, optionalDelay, options){
         }
     };
     self.fire = function(event){
-        if (typeof events[event] !== 'undefined'){
-            for (var i = 0, len = events[event].length; i < len; i++){
-                var evt = events[event][i];
-                var args = evt[2] ? evt[2] : [];
-                args.unshift({name: event});
-                evt[0].apply(evt[1], args);
+        var eventArray = event.split(' ');
+        for (var i = 0; i < eventArray.length; i++){
+            var current = events[eventArray[i]];
+            if (typeof current !== 'undefined'){
+                for (var j = 0, len = current.length; j < len; j++){
+                    var evt = current[j];
+                    var args = evt[2] ? evt[2] : [];
+                    args.unshift({name: event});
+                    evt[0].apply(evt[1], args);
+                }
             }
         }
     };
