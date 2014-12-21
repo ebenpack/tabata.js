@@ -17,6 +17,8 @@ function Tabata(timer, optionalDelay, options){
     var milliseconds = 0;
     var self = this;
     var playing = false;
+    var currentEvent = null;
+    var nextEvent = null;
     self.eventQueue = [];
 
     // Extend defaults with options.
@@ -34,23 +36,22 @@ function Tabata(timer, optionalDelay, options){
     // Fire 'second' events every second-ish while running.
     // Also check for and fire other events.
     function update(){
-        if (!self.currentEvent){
+        if (!currentEvent){
             self.fire('start');
         }
         var now = Date.now();
         var elapsed = now - lastUpdate;
         milliseconds += elapsed;
         var timeSeconds = Math.floor(milliseconds / 1000);
-        self.currentEvent = self.eventQueue[eventIndex];
-        var currentEvent = self.currentEvent;
+        currentEvent = self.eventQueue[eventIndex];
+        nextEvent = self.eventQueue[eventIndex];
         if (currentEvent && timeSeconds - totalTimeElapsed >= 1){
             var secondsElapsed = timeSeconds - totalTimeElapsed;
             totalTimeElapsed = timeSeconds;
             while (currentEvent && currentEvent.time <= totalTimeElapsed){
                 self.fire(currentEvent.event);
                 eventIndex += 1;
-                self.currentEvent = self.eventQueue[eventIndex];
-                currentEvent = self.currentEvent;
+                currentEvent = self.eventQueue[eventIndex];
                 roundTimeElapsed = 0;
             }
             if (currentEvent){
@@ -151,14 +152,18 @@ function Tabata(timer, optionalDelay, options){
         lastUpdate = 0;
         totalTime = 0;
         milliseconds = 0;
-        self.currentEvent = null;
+        currentEvent = null;
+        nextEvent = null;
         roundTimeElapsed = 0;
         roundTimeRemaining = 0;
+    };
+    self.percentComplete = function(){
+        return totalTimeElapsed / totalTime;
     };
     self.on = function(evts, fn, that, args){
         var eventArray = evts.split(' ');
         if (typeof that === 'undefined'){
-            that = null;
+            that = self;
         }
         for (var i = 0, len = eventArray.length; i < len; i++){
             var event = eventArray[i];
