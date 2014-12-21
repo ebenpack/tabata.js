@@ -7,6 +7,35 @@
         .time {
             font-size: 80px;
         }
+        #progress-container, #progressbar, #progress {
+            position: relative;
+            height: 40px;
+            width: 600px;
+            background: blue;
+        }
+        #progressbar {
+            position: absolute;
+            left: 0;
+            background: grey;
+            width: 0;
+            z-index: 2;
+            -webkit-transition:width 1s linear;
+            transition:width 1s linear;
+        }
+        #progress div {
+            height: 100%;
+            float: left;
+        }
+
+        .on {
+            background: green;
+        }
+        .off {
+            background: red;
+        }
+        .warmup, .cooldown {
+            background: yellow;
+        }
     </style>
 </head>
 <body>
@@ -28,58 +57,14 @@
             Round Time Remaining
             <div id="roundTimeRemaining" class="time">00:00</div>
         </div>
+        <div id="progress-container">
+            <div id="progressbar"></div>
+            <div id="progress"></div>
+        </div>
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
     <script src="src/tabata.js"></script>
-    <script>
-    (function(){
-        var body = document.getElementsByTagName('body')[0];
-        var time = document.getElementById('time');
-        var timeRemainging = document.getElementById('timeRemaining');
-        var roundTime = document.getElementById('roundTime');
-        var roundtimeRemainging = document.getElementById('roundTimeRemaining');
-        var timer = new Tabata(
-            [{
-                'events': [{
-                    'warmup': '10s'
-                }]
-            }, {
-                'events': [{
-                    'on': '10s'
-                }, {
-                    'off': '5s'
-                }],
-                'rounds': 1
-            }, {
-                'events': [{
-                    'on': '3s'
-                }, {
-                    'off': '2s'
-                }],
-                'rounds': 2
-            }, {
-                'events': [{'cooldown': '10s'}]
-            }], 100, {});
-        document.getElementById('start').addEventListener('click', timer.start);
-        document.getElementById('stop').addEventListener('click', timer.stop);
-        timer.on('init second end', function(evt){
-            if (evt.name === 'end'){
-                body.style.background = 'yellow';
-            }
-            time.textContent = timer.timeElapsed();
-            timeRemaining.textContent = timer.timeRemaining();
-            roundTime.textContent = timer.roundTimeElapsed();
-            roundTimeRemaining.textContent = timer.roundTimeRemaining();
-        });
-        timer.on('on', function(evt){
-            body.style.background = 'green';
-        });
-        timer.on('off', function(evt){
-            body.style.background = 'red';
-        });
-        timer.fire('init');
-    })();
-    </script>
+    <script src="demo.js"></script>
 </body>
 </html>
