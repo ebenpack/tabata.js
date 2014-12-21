@@ -168,10 +168,10 @@ function Tabata(timer, optionalDelay, options){
             events[event].push([fn, that, args]);
         }
     };
-    self.fire = function(event){
-        var eventArray = event.split(' ');
+    self.fire = function(evts){
+        var eventArray = evts.split(' ');
         for (var i = 0; i < eventArray.length; i++){
-            var current = events[eventArray[i]];
+            var current = evts[eventArray[i]];
             if (typeof current !== 'undefined'){
                 for (var j = 0, len = current.length; j < len; j++){
                     var evt = current[j];
