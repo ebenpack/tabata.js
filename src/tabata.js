@@ -4,7 +4,7 @@
  */
 function Tabata(timer, optionalDelay, options){
     var events = {};
-    var second = 0; // Total seconds elapsed
+    var totalTimeElapsed = 0;
     var lastUpdate = 0;
     var timeoutId;
     var totalTime = 0;
@@ -43,10 +43,10 @@ function Tabata(timer, optionalDelay, options){
         var timeSeconds = Math.floor(milliseconds / 1000);
         self.currentEvent = self.eventQueue[eventIndex];
         var currentEvent = self.currentEvent;
-        if (currentEvent && timeSeconds - second >= 1){
-            var secondsElapsed = timeSeconds - second;
-            second = timeSeconds;
-            while (currentEvent && currentEvent.time <= second){
+        if (currentEvent && timeSeconds - totalTimeElapsed >= 1){
+            var secondsElapsed = timeSeconds - totalTimeElapsed;
+            totalTimeElapsed = timeSeconds;
+            while (currentEvent && currentEvent.time <= totalTimeElapsed){
                 self.fire(currentEvent.event);
                 eventIndex += 1;
                 self.currentEvent = self.eventQueue[eventIndex];
@@ -56,11 +56,11 @@ function Tabata(timer, optionalDelay, options){
             if (currentEvent){
                 roundTimeElapsed += secondsElapsed;
                 self.fire('second');
-                if (second === currentEvent.time - 3){
+                if (totalTimeElapsed === currentEvent.time - 3){
                     self.fire('three');
-                } else if (second === currentEvent.time - 2){
+                } else if (totalTimeElapsed === currentEvent.time - 2){
                     self.fire('two');
-                } else if (second === currentEvent.time - 1){
+                } else if (totalTimeElapsed === currentEvent.time - 1){
                     self.fire('one');
                 }
             }
@@ -123,16 +123,16 @@ function Tabata(timer, optionalDelay, options){
         return numStr;
     }
     self.timeElapsed = function(){
-        return formatTime(second);
+        return formatTime(totalTimeElapsed);
     };
     self.timeRemaining = function(){
-        return formatTime(totalTime - second);
+        return formatTime(totalTime - totalTimeElapsed);
     };
     self.roundTimeElapsed = function(){
         return formatTime(roundTimeElapsed);
     };
     self.roundTimeRemaining = function(){
-        return formatTime(self.eventQueue[eventIndex].time - second);
+        return formatTime(self.eventQueue[eventIndex].time - totalTimeElapsed);
     };
     self.centisecond = function(){
         return formatTime(parseFloat((milliseconds / 1000).toFixed(2)));
@@ -170,8 +170,9 @@ function Tabata(timer, optionalDelay, options){
     };
     self.fire = function(evts){
         var eventArray = evts.split(' ');
+        console.log(eventArray);
         for (var i = 0; i < eventArray.length; i++){
-            var current = evts[eventArray[i]];
+            var current = events[eventArray[i]];
             if (typeof current !== 'undefined'){
                 for (var j = 0, len = current.length; j < len; j++){
                     var evt = current[j];
