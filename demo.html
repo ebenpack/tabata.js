@@ -4,14 +4,39 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <style>
+        #tabata {
+            width: 80%;
+            margin: 20px auto;
+        }
         .time {
             font-size: 80px;
+        }
+        .totalElapsedContainer {
+            width: 80%;
+            margin: 10px auto;
+            text-align: center;
+        }
+        .totalElapsedContainer .time {
+            font-size: 8em;
+        }
+        .timeRemainingContainer, .roundTimeRemainingContainer, .roundTimeContainer {
+            text-align: center;
+            width: 33.3333333%;
+            float:left;
+        }
+        #progress-container {
+            clear: left;
+            width: 80%;
+            margin: 20px auto;
+            -moz-border-radius:10px;
+            -webkit-border-radius:10px;
+            -o-border-radius:10px;
+            border-radius:10px;position: relative;
+            overflow:hidden;
         }
         #progress-container, #progressbar, #progress {
             position: relative;
             height: 40px;
-            width: 600px;
-            background: blue;
         }
         #progressbar {
             position: absolute;
@@ -19,41 +44,74 @@
             background: grey;
             width: 0;
             z-index: 2;
-            -webkit-transition:width 1s linear;
-            transition:width 1s linear;
+            -webkit-transition: width 1s linear;
+            transition: width 1s linear;
         }
         #progress div {
             height: 100%;
             float: left;
         }
-
         .on {
-            background: green;
+            background: #5cb85c;
         }
         .off {
-            background: red;
+            background: #d9534f;
         }
         .warmup, .cooldown {
-            background: yellow;
+            background: #FFFF8B;
+        }
+        .controls {
+            text-align: center;
+        }
+        .start {
+            background-color:#5cb85c;
+            border:1px solid #18ab29;
+        }
+        .start:hover {
+            background-color: #82D682;
+        }
+        .stop {
+            background-color: #d9534f;
+            border: 1px solid #ffffff;
+        }
+        .stop:hover {
+            background-color: #eb675e;
+        }
+        .controls button {
+            -moz-border-radius: 28px;
+            -webkit-border-radius: 28px;
+            border-radius: 28px;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: arial;
+            font-size: 17px;
+            padding: 9px 31px;
+            text-decoration: none;
+            text-shadow: 0px 1px 0px #2f6627;
+        }
+        .controls button:active {
+            position:  relative;
+            top:1px;
         }
     </style>
 </head>
 <body>
 
     <div id="tabata">
-        <div>
+        <div class="totalElapsedContainer timeContainer">
             Time Elapsed:
             <div id="time" class="time">00:00</div>
         </div>
-        <div>
+        <div class="timeRemainingContainer timeContainer">
             Time Remaining
             <div id="timeRemaining" class="time">00:00</div>
         </div>
-        <div>
+        <div class="roundTimeContainer timeContainer">
             Round Elapsed:
             <div id="roundTime" class="time">00:00</div>
         </div>
-        <div>
+        <div class="roundTimeRemainingContainer timeContainer">
             Round Time Remaining
             <div id="roundTimeRemaining" class="time">00:00</div>
         </div>
@@ -61,8 +119,10 @@
             <div id="progressbar"></div>
             <div id="progress"></div>
         </div>
-        <button id="start">Start</button>
-        <button id="stop">Stop</button>
+        <div class="controls">
+            <button class="start" id="start">Start</button>
+            <button class="stop" id="stop">Stop</button>
+        </div>
     </div>
     <script src="src/tabata.js"></script>
     <script src="demo.js"></script>

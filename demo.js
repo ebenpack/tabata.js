@@ -6,23 +6,14 @@
     var roundtimeRemainging = document.getElementById('roundTimeRemaining');
     var timer = new Tabata(
         [{
-            'events': [{
-                'warmup': '10s'
-            }]
+            'events': [{'warmup': '10s'}]
         }, {
             'events': [{
-                'on': '10s'
+                'on': '20s'
             }, {
-                'off': '5s'
+                'off': '10s'
             }],
-            'rounds': 1
-        }, {
-            'events': [{
-                'on': '3s'
-            }, {
-                'off': '2s'
-            }],
-            'rounds': 2
+            'rounds': 8
         }, {
             'events': [{'cooldown': '10s'}]
         }], 100, {});
