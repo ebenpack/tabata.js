@@ -38,12 +38,34 @@
             position: relative;
             height: 40px;
         }
+        @-webkit-keyframes progress {
+              from {
+                background-position: 0 0;
+              }
+              to {
+                background-position: 60px 30px;
+              }
+        }
+
+        /* Standard syntax */
+        @keyframes progress {
+              from {
+                background-position: 0 0;
+              }
+              to {
+                background-position: 60px 30px;
+              }
+        } 
         #progressbar {
             position: absolute;
             left: 0;
-            background: grey;
+            /*repeating-linear-gradient(135deg, #606DBC, #606DBC 10px, #465298 10px, #465298 20px) repeat scroll 0% 0% transparent;*/
+            background-size: 30px 30px;
+            background-image: linear-gradient(135deg, #606DBC 25%, #465298 25%, #465298 50%, #606DBC 50%, #606DBC 75%, #465298 75%, #465298);
             width: 0;
             z-index: 2;
+            -webkit-animation: progress 5s linear infinite;
+            animation: progress 5s linear infinite;
             -webkit-transition: width 1s linear;
             transition: width 1s linear;
         }
