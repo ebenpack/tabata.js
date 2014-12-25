@@ -33,10 +33,15 @@
     for (var i = 0; i < timer.eventQueue.length; i++){
         totalTime += timer.eventQueue[i].duration;
     }
+    var count = 1;
     for (var i = 0; i < timer.eventQueue.length; i++){
         var evt = timer.eventQueue[i];
         var newEvent = document.createElement('div');
         newEvent.className = evt.event;
+        if (evt.event === 'on'){
+            newEvent.textContent = count;
+            count += 1;
+        }
         newEvent.style.width = (evt.duration / totalTime * 100) + "%";
         progress.appendChild(newEvent);
     }
