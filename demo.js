@@ -19,11 +19,18 @@
         }], 100, {});
     document.getElementById('start').addEventListener('click', timer.start);
     document.getElementById('stop').addEventListener('click', timer.stop);
+    document.getElementById('reset').addEventListener('click', timer.reset);
     timer.on('init second end', function(evt){
         time.textContent = timer.timeElapsed();
         timeRemaining.textContent = timer.timeRemaining();
         roundTime.textContent = timer.roundTimeElapsed();
         roundTimeRemaining.textContent = timer.roundTimeRemaining();
+    });
+    timer.on('on', function(evt){
+        body.style.background = 'green';
+    });
+    timer.on('off', function(evt){
+        body.style.background = 'red';
     });
 
     // Build progress bar
@@ -47,7 +54,7 @@
     }
 
     timer.on('second end', function(evt){
-        progressbar.style.width = (this.percentComplete() * 100) + "%";
+        progressbar.style.width = this.percentComplete() + "%";
     });
 
     timer.fire('init');

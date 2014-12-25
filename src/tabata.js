@@ -37,7 +37,7 @@ function Tabata(timer, optionalDelay, options){
     // Also check for and fire other events.
     function update(){
         if (!currentEvent){
-            self.fire('start');
+            self.fire('begin');
         }
         var now = Date.now();
         var elapsed = now - lastUpdate;
@@ -139,15 +139,18 @@ function Tabata(timer, optionalDelay, options){
         return formatTime(parseFloat((milliseconds / 1000).toFixed(2)));
     };
     self.start = function(){
+        self.fire('start');
         playing = true;
         lastUpdate = Date.now();
         update();
     };
     self.stop = function(){
+        self.fire('stop');
         playing = false;
         clearTimeout(timeoutId);
     };
     self.reset = function(){
+        self.fire('reset');
         self.stop();
         lastUpdate = 0;
         totalTime = 0;
@@ -158,7 +161,7 @@ function Tabata(timer, optionalDelay, options){
         roundTimeRemaining = 0;
     };
     self.percentComplete = function(){
-        return totalTimeElapsed / totalTime;
+        return (totalTimeElapsed / totalTime) * 100;
     };
     self.on = function(evts, fn, that, args){
         var eventArray = evts.split(' ');

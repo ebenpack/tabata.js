@@ -84,20 +84,6 @@
         .controls {
             text-align: center;
         }
-        .start {
-            background-color: #5cb85c;
-            border: 1px solid #18ab29;
-        }
-        .start:hover {
-            background-color: #82D682;
-        }
-        .stop {
-            background-color: #d9534f;
-            border: 1px solid #ffffff;
-        }
-        .stop:hover {
-            background-color: #eb675e;
-        }
         .controls button {
             -moz-border-radius: 28px;
             -webkit-border-radius: 28px;
@@ -114,6 +100,28 @@
         .controls button:active {
             position: relative;
             top: 1px;
+        }
+        .controls .start {
+            background-color: #5cb85c;
+            border: 1px solid #18ab29;
+        }
+        .controls .start:hover {
+            background-color: #82D682;
+        }
+        .controls .stop {
+            background-color: #d9534f;
+            border: 1px solid #d52b26;
+        }
+        .controls .stop:hover {
+            background-color: #eb675e;
+        }
+        .controls .reset {
+            background-color: #ffff8b;
+            border: 1px solid #fefe00;
+            color: black;
+        }
+        .controls .reset:hover {
+            background-color: #ffffb2;
         }
     </style>
 </head>
@@ -143,6 +151,7 @@
         <div class="controls">
             <button class="start" id="start">Start</button>
             <button class="stop" id="stop">Stop</button>
+            <button class="reset" id="reset">Reset</button>
         </div>
     </div>
     <script src="src/tabata.js"></script>
