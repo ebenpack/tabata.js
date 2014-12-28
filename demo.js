@@ -4,6 +4,11 @@
     var timeRemainging = document.getElementById('timeRemaining');
     var roundTime = document.getElementById('roundTime');
     var roundtimeRemainging = document.getElementById('roundTimeRemaining');
+    var three = document.getElementById('three');
+    var two = document.getElementById('two');
+    var one = document.getElementById('one');
+    var go = document.getElementById('go');
+    var stop = document.getElementById('stop');
     var timer = new Tabata(
         [{
             'events': [{'warmup': '10s'}]
@@ -25,6 +30,21 @@
         timeRemaining.textContent = timer.timeRemaining();
         roundTime.textContent = timer.roundTimeElapsed();
         roundTimeRemaining.textContent = timer.roundTimeRemaining();
+    });
+    timer.on('three', function(evt){
+        three.className = 'light active';
+        two.className = 'light';
+        one.className = 'light';
+        go.className = 'light';
+    });
+    timer.on('two', function(evt){
+        two.className += ' active';
+    });
+    timer.on('one', function(evt){
+        one.className += ' active';
+    });
+    timer.on('on off', function(evt){
+        go.className += ' active';
     });
     timer.on('on', function(evt){
         body.style.background = 'green';
