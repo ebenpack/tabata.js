@@ -185,7 +185,7 @@ function Tabata(timer, optionalDelay, options){
                 for (var j = 0, len = current.length; j < len; j++){
                     var evt = current[j];
                     var args = evt[2] ? evt[2] : [];
-                    args.unshift({name: event});
+                    args.unshift({name: eventArray[i]});
                     evt[0].apply(evt[1], args);
                 }
             }
