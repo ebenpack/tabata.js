@@ -56,13 +56,13 @@ function Tabata(timer, optionalDelay, options){
             }
             if (currentEvent){
                 roundTimeElapsed += secondsElapsed;
-                self.fire('second');
+                self.fire(currentEvent.event + '.second');
                 if (totalTimeElapsed === currentEvent.time - 3){
-                    self.fire('three');
+                    self.fire(currentEvent.event + '.three');
                 } else if (totalTimeElapsed === currentEvent.time - 2){
-                    self.fire('two');
+                    self.fire(currentEvent.event + '.two');
                 } else if (totalTimeElapsed === currentEvent.time - 1){
-                    self.fire('one');
+                    self.fire(currentEvent.event + '.one');
                 }
             }
         }
@@ -177,8 +177,23 @@ function Tabata(timer, optionalDelay, options){
         }
     };
     self.fire = function(evts){
-        var eventArray = evts.split(' ');
-        console.log(eventArray);
+        // Build array of events to fire
+        var eventArray = [];
+        var tmpArray1 = evts.split(' ');
+        for (var i = 0; i < tmpArray1.length; i++){
+            var e = tmpArray1[i]
+            while (e){
+                eventArray.push(e);
+                var index = e.lastIndexOf('.')
+                if (index > 0){
+                    eventArray.push(e.substr(index + 1));
+                    e = e.substring(0, index);
+                } else {
+                    break;
+                }
+            }
+        }
+        // Fire events
         for (var i = 0; i < eventArray.length; i++){
             var current = events[eventArray[i]];
             if (typeof current !== 'undefined'){

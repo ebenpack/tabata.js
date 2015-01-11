@@ -26,9 +26,6 @@
         roundTime.textContent = timer.roundTimeElapsed();
         roundTimeRemaining.textContent = timer.roundTimeRemaining();
     });
-    timer.on('on off', function(evt){
-        go.className += ' active';
-    });
     timer.on('on', function(evt){
         body.style.background = 'green';
     });
